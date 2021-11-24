@@ -195,6 +195,8 @@ oneline = oneline.replace('w[', 'w\n[')
 oneline = oneline.replace('x[', 'x\n[')
 oneline = oneline.replace('y[', 'y\n[')
 oneline = oneline.replace('z[', 'z\n[')
+oneline = oneline.replace('[00:00.00] {lyrics:{syncType:UNSYNCED,lines:[ ', '')
+oneline = oneline.replace('[00:00.00] ', '')
 
 with open('output.lrc', 'w') as file:
     file.write(oneline)
