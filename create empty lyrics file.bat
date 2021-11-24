@@ -1,1 +1,0 @@
-fsutil file createnew lyrics.txt 0
