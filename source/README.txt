@@ -1,3 +1,6 @@
+TO FORM CONVERTER.PY YOU MUST COPY/PASTE ALL THREE .PY FILES SEQUENTIALLY INTO ONE .PY FILE
+
+How to use:
 Open Spotify web player
 Choose desired song
 Open Chrome dev tools Network tab
