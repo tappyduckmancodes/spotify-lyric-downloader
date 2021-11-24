@@ -1,8 +1,8 @@
-# Read in the file
+# Read in the jumbled Spotify lyric text
 with open('lyrics.txt', 'r') as file :
     filedata = file.read()
 
-# Replace the target string
+# Remove Spotify formatting
 filedata = filedata.replace('},', '} \n')
 filedata = filedata.replace('{"lyrics":{"syncType":"LINE_SYNCED","lines":[', '')
 filedata = filedata.replace('\\u0027', '\'')
@@ -13,7 +13,7 @@ filedata = filedata.replace('"', '')
 filedata = filedata.replace('hasVocalRemoval:false}', '')
 filedata = filedata.replace(']', '] ')
 
-# Write the file out again
+# Write the file out
 with open('lyricsfixed.lrc', 'w') as file:
     file.write(filedata)
 
@@ -25,7 +25,7 @@ with open("lyricsfixed.lrc", "w") as new_f:
         if not line.startswith("colors:{background"):
             new_f.write(line)
 
-# remove last line 
+# removes last line of gibberish
 import os, sys, re
 readFile = open("lyricsfixed.lrc")
 lines = readFile.readlines()
@@ -37,19 +37,14 @@ w.close()
 import os, re
 with open('lyricsfixed.lrc', 'r') as file :
     filedata = file.read()
-# initializing string
+# I keep initializing it the same way and just reassigning the filedata string because i am idiot brain (stop doing this!)
 test_str = filedata
 
-# Extract Numbers in Brackets in String
-# Using regex
+# Extracts all timings in ms into a string
+# Using regex which i do not get at all
 res = re.findall(r"\[\s*\+?(-?\d+)\s*\]", test_str)
-# saving to timings.txt
+# saving timings to timings.txt
 file = open("timings.txt", "w")
-
-
-corrected_times = []
-for time in res:
-  corrected_times.append((int(time)) / 1000)
 
 formatted_times = [] #timing conversion
 for time in res:
@@ -67,7 +62,7 @@ file.close()
 with open('timings.txt', 'r') as file :
     filedata = file.read()
 
-# Replace the target string
+# Bad logic to add brackets and keep timing scheme consistent because im dumb
 filedata = filedata.replace('0:', '[00:')
 filedata = filedata.replace('1:', '[01:')
 filedata = filedata.replace('2:', '[02:')
@@ -113,9 +108,10 @@ filedata = filedata.replace('7 ', '7]')
 filedata = filedata.replace('8 ', '8')
 filedata = filedata.replace('9 ', '9]')
 
+# bad file editing to catch the last bracket not applying
 s1 = filedata
 s2 = "]"
-filedatawithlastbracket = (s1 + s2)
+filedatawithlastbracket = (s1 + s2) 
 
 with open('timingsfixed.txt', 'w') as file:
     file.write(filedatawithlastbracket)
@@ -125,22 +121,22 @@ os.rename('timingsfixed.txt', 'timingsfixed.lrc')
 
 with open('lyricsfixed.lrc', 'r') as file :
     filedata = file.read()
-# initializing string
+# doing what i did earlier, very janky and very backwards, to extract whats *not* in the brackets to get the words to apply the new times to
 test_str = filedata
 a_string = test_str
 modified_string = re.sub(r"\[\s*\+?(-?\d+)\s*\]", "", a_string)
-#print(modified_string) should be just song lyrics no timecodes
+print(modified_string)
 
 with open('lyricstimingsremoved.txt', 'w') as file:
     file.write(modified_string)
 
-import os, re, itertools
+    import os, re, itertools
 from itertools import zip_longest
 with open('timingsfixed.lrc', 'r') as file :
     filedata = file.read()
 with open('lyricstimingsremoved.txt', 'r') as file1:
     test_str = file1.read()
-
+#combines new timing and lyric files, A/B/A/B style, no AA/BB
 with open('timingsfixed.lrc', 'r') as src1, open('lyricstimingsremoved.txt', 'r') as src2, open('output.lrc', 'w') as dst:
     for line_from_first, line_from_second in itertools.zip_longest(src1, src2):
         if line_from_first is not None:
@@ -153,7 +149,7 @@ with open('output.lrc', 'r') as file :
 filedata = filedata.replace('   ', '')
 with open('output.lrc', 'w') as file:
     file.write(filedata)
-
+#combines into one line where line breaks can be added
 with open('output.lrc') as f:
     all_lines = f.readlines()
     all_lines = [x.strip() for x in all_lines if x.strip()]
@@ -164,7 +160,7 @@ oneline = (two_lines + lines_left)
 
 print(oneline)
 
-# Replace the target string
+# Breaks multiple lines colliding making LRC file unreadable
 oneline = oneline.replace(' [', '\n[')
 oneline = oneline.replace('.[', '.\n[')
 oneline = oneline.replace('![', '!\n[')
@@ -195,18 +191,18 @@ oneline = oneline.replace('w[', 'w\n[')
 oneline = oneline.replace('x[', 'x\n[')
 oneline = oneline.replace('y[', 'y\n[')
 oneline = oneline.replace('z[', 'z\n[')
-oneline = oneline.replace(')[', ')\n[')
 oneline = oneline.replace('[00:00.00] {lyrics:{syncType:UNSYNCED,lines:[ ', '')
 oneline = oneline.replace('[00:00.00] ', '')
 oneline = oneline.replace('[00:00.0] ', '')
 
 with open('output.lrc', 'w') as file:
     file.write(oneline)
-os.remove("lyrics.txt")
 os.remove("lyricsfixed.lrc")
 os.remove("lyricstimingsremoved.txt")
 os.remove("timingsfixed.lrc") 
-os.remove("timingsfixed.txt")
+os.remove("lyrics.txt")
 
-with open('lyrics.txt', 'w') as file:
-    file.write("Lyrics go here")
+#erases content of lyrics file for next time
+z = open("lyrics.txt", "w")
+z.write("Replace this text with the lyrics!")
+z.close()
