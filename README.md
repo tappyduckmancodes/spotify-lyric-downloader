@@ -16,7 +16,7 @@ find the link in Network Tools that starts with "https://spclient.wg.spotify.com
 
 Copy and paste entire chunk of text into "lyrics.txt" and save it
 
-Run "clicktoconvert.bat"
+Run "converter.py"
 
 Done! Rename output.lrc file to desired filename.
 
