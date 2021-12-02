@@ -1,12 +1,13 @@
-# spotify-lyrics-to-lrc
-Converts between Spotify's new lyrics (and their proprietary format) to an LRC file for local playback.
+# **spotify-lyrics-to-lrc**
+Rips lyrics from currently playing song on Spotify, converts to LRC format for offline playback (e.g Plex, Kodi, MusicBee)
+
 ---------------------------------------------------------------------
-Requisites:
+# Requisites:
 
 > pip install os re sys spotipy itertools json requests base64 linecache webbrowser bs4 time pyautogui pyperclip urllib3
 
 ---------------------------------------------------------------------
-How to set up:
+# How to set up:
 
 · Go to the [Spotify API Dashboard](https://developer.spotify.com/dashboard/applications)
 
@@ -24,7 +25,7 @@ How to set up:
   
 ---------------------------------------------------------------------
 
-How to use:
+# How to use:
 
 · Listen to a song on Spotify
 
