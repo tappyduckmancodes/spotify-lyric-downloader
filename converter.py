@@ -1,8 +1,14 @@
+import os, re, sys, itertools, json, requests, base64, linecache, time, requests
+import urllib.request
+import lyricdownloader, shutil
+
+host_folder = lyricdownloader.host_dir
+os.chdir(host_folder)
 # Read in the jumbled Spotify lyric text
 with open('lyrics.txt', 'r') as file :
     filedata = file.read()
 
-# Remove Spotify formatting
+# Remove some of the Spotify formatting
 filedata = filedata.replace('},', '} \n')
 filedata = filedata.replace('{"lyrics":{"syncType":"LINE_SYNCED","lines":[', '')
 filedata = filedata.replace('\\u0027', '\'')
@@ -17,7 +23,7 @@ filedata = filedata.replace(']', '] ')
 with open('lyricsfixed.lrc', 'w') as file:
     file.write(filedata)
 
-# remove leftover shit from spotify that doesnt apply to lrc files
+# remove leftover shit from Spotify that doesnt apply to lrc files
 with open("lyricsfixed.lrc", "r") as f:
     lines = f.readlines() 
 with open("lyricsfixed.lrc", "w") as new_f:
@@ -34,13 +40,12 @@ w = open("lyricsfixed.lrc",'w')
 w.writelines([item for item in lines[:-1]])
 w.close()
 
-import os, re
 with open('lyricsfixed.lrc', 'r') as file :
     filedata = file.read()
 # I keep initializing it the same way and just reassigning the filedata string because i am idiot brain (stop doing this!)
 test_str = filedata
 
-# Extracts all timings in ms into a string
+# Extracts all regions in ms into a string
 # Using regex which i do not get at all
 res = re.findall(r"\[\s*\+?(-?\d+)\s*\]", test_str)
 # saving timings to timings.txt
@@ -130,7 +135,6 @@ print(modified_string)
 with open('lyricstimingsremoved.txt', 'w') as file:
     file.write(modified_string)
 
-    import os, re, itertools
 from itertools import zip_longest
 with open('timingsfixed.lrc', 'r') as file :
     filedata = file.read()
@@ -157,11 +161,12 @@ with open('output.lrc') as f:
     lines_left = " ".join(x for x in all_lines[2:])
 
 oneline = (two_lines + lines_left)
-
-print(oneline)
+#everything put into one line, needed for line breaks
 
 # Breaks multiple lines colliding making LRC file unreadable
 oneline = oneline.replace(' [', '\n[')
+oneline = oneline.replace('\\', '')
+oneline = oneline.replace(')[', ')\n[')
 oneline = oneline.replace('.[', '.\n[')
 oneline = oneline.replace('![', '!\n[')
 oneline = oneline.replace('?[', '?\n[')
@@ -194,15 +199,56 @@ oneline = oneline.replace('z[', 'z\n[')
 oneline = oneline.replace('[00:00.00] {lyrics:{syncType:UNSYNCED,lines:[ ', '')
 oneline = oneline.replace('[00:00.00] ', '')
 oneline = oneline.replace('[00:00.0] ', '')
+oneline = oneline.replace('.9]', '.90]')
+oneline = oneline.replace('.8]', '.80]')
+oneline = oneline.replace('.7]', '.70]')
+oneline = oneline.replace('.6]', '.60]')
+oneline = oneline.replace('.5]', '.50]')
+oneline = oneline.replace('.4]', '.40]')
+oneline = oneline.replace('.3]', '.30]')
+oneline = oneline.replace('.2]', '.20]')
+oneline = oneline.replace('.1]', '.10]')
+oneline = oneline.replace('.0]', '.00]')
 
 with open('output.lrc', 'w') as file:
     file.write(oneline)
 os.remove("lyricsfixed.lrc")
 os.remove("lyricstimingsremoved.txt")
 os.remove("timingsfixed.lrc") 
+os.remove("corrected.txt")
 os.remove("lyrics.txt")
 
-#erases content of lyrics file for next time
-z = open("lyrics.txt", "w")
-z.write("Replace this text with the lyrics!")
-z.close()
+host_folder = lyricdownloader.host_dir
+album_folder = lyricdownloader.albumdir
+song = lyricdownloader.mod_string_1
+cover = lyricdownloader.cover
+
+originallyricsfile = (host_folder + "\\output.lrc")
+movedlyricsfile = (album_folder + "\\" + song + ".lrc")
+movedcoverjpg = (album_folder + "\\" + "cover.jpg")
+
+#puts folder 
+print("Moved Lyric To:")
+print(movedlyricsfile)
+newPath = shutil.move(originallyricsfile, movedlyricsfile)
+
+# downloads cover to folder
+image_url = cover
+f = open(movedcoverjpg,'wb')
+f.write(urllib.request.urlopen(cover).read())
+f.close()
+
+os.chdir(album_folder)
+
+if os.path.isfile("cover.jpg"):
+    print("Cover already downloaded, skipping download")
+    
+else:
+# downloads cover to folder
+    print("No cover.jpg detected, downloading now")
+    image_url = cover
+    f = open(movedcoverjpg,'wb')
+    f.write(urllib.request.urlopen(cover).read())
+    f.close()
+    print("Cover downloaded to:")
+    print(movedcoverjpg)
