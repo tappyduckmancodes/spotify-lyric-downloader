@@ -1,12 +1,53 @@
-import os, re, sys, itertools, json, requests, base64, linecache, time, requests
+import os, re, sys, itertools, json, requests, base64, linecache, time, requests, webbrowser, bs4, time, pyautogui, pyperclip, urllib3, pprint, shutil
 import urllib.request
-import lyricdownloader, shutil
+import downloader
 
-host_folder = lyricdownloader.host_dir
+host_folder = downloader.host_dir
 os.chdir(host_folder)
+lyrics_url = downloader.lyrics_url
+
 # Read in the jumbled Spotify lyric text
 with open('lyrics.txt', 'r') as file :
     filedata = file.read()
+    fullstring = filedata
+substring_403 = "HTTP ERROR 403"
+substring_401 = '"status": 401,'
+substring_success = "lyrics"
+
+print("Searching for valid lyrics...")
+# exception for songs with no lyrics
+if substring_403 in fullstring:
+    os.remove("lyrics.txt")
+    print("Lyrics not available for this song, sorry!")
+    if len(os.listdir(downloader.albumdir)) == 0: # Check if the album folder is empty
+        shutil.rmtree(downloader.albumdir) # If so, delete it
+        if len(os.listdir(downloader.artistdir)) == 0: # Check if the artist folder is empty
+            shutil.rmtree(downloader.artistdir) # If so, delete it
+            quit()
+# exception with no token, just redownloads it based on lyrics_url
+elif substring_401 in fullstring:
+    print("Error, no token found, retrying once")
+    link_for_cookie = "https://open.spotify.com/lyrics"
+    lyrics = webbrowser.open(link_for_cookie, new=0, autoraise=True)
+    time.sleep(10)
+    lyrics = webbrowser.open(lyrics_url, new=0, autoraise=True)
+    time.sleep(1.2)
+    pyautogui.hotkey('ctrl', 'a')
+    pyautogui.hotkey('ctrl', 'c')
+    time.sleep(0.1)
+    pyautogui.hotkey('ctrl', 'w')
+    pyautogui.hotkey('ctrl', 'w')
+    print("tab closed")
+    lyricdata = pyperclip.paste()
+    z = open("lyrics.txt", "w", encoding="utf-8")
+    z.write(lyricdata)
+    z.close()
+#exception for successful lyric grab
+elif substring_success in fullstring:
+    print("Lyric grab was success, converting now...")
+    with open('lyrics.txt', 'r') as file :
+        filedata = file.read()
+        fullstring = filedata
 
 # Remove some of the Spotify formatting
 filedata = filedata.replace('},', '} \n')
@@ -18,6 +59,7 @@ filedata = filedata.replace('","words":', ']')
 filedata = filedata.replace('"', '')
 filedata = filedata.replace('hasVocalRemoval:false}', '')
 filedata = filedata.replace(']', '] ')
+filedata = filedata.replace('\\', '*')
 
 # Write the file out
 with open('lyricsfixed.lrc', 'w') as file:
@@ -129,8 +171,8 @@ with open('lyricsfixed.lrc', 'r') as file :
 # doing what i did earlier, very janky and very backwards, to extract whats *not* in the brackets to get the words to apply the new times to
 test_str = filedata
 a_string = test_str
-modified_string = re.sub(r"\[\s*\+?(-?\d+)\s*\]", "", a_string)
-print(modified_string)
+modified_string = re.sub(r"\[\s*\+?(-?\d+)\s*\]", "", a_string) # just the words from the song, prints without timecodes
+# print(modified_string)
 
 with open('lyricstimingsremoved.txt', 'w') as file:
     file.write(modified_string)
@@ -210,45 +252,54 @@ oneline = oneline.replace('.2]', '.20]')
 oneline = oneline.replace('.1]', '.10]')
 oneline = oneline.replace('.0]', '.00]')
 
+#writing final lines
 with open('output.lrc', 'w') as file:
     file.write(oneline)
+    print("Conversion complete!")
+
+#remove leftover files
 os.remove("lyricsfixed.lrc")
 os.remove("lyricstimingsremoved.txt")
-os.remove("timingsfixed.lrc") 
-os.remove("corrected.txt")
+os.remove("timingsfixed.lrc")
 os.remove("lyrics.txt")
 
-host_folder = lyricdownloader.host_dir
-album_folder = lyricdownloader.albumdir
-song = lyricdownloader.mod_string_1
-cover = lyricdownloader.cover
+#set up variables for moving lyric and setting up cover.jpg location
+host_folder = downloader.host_dir
+lyrics = "Lyrics"
+artist_name = downloader.artist
+albumdir = downloader.albumdir
+song = downloader.song
+cover = downloader.lyrics_url
 
 originallyricsfile = (host_folder + "\\output.lrc")
-movedlyricsfile = (album_folder + "\\" + song + ".lrc")
-movedcoverjpg = (album_folder + "\\" + "cover.jpg")
+movedlyricsfile = (albumdir + "\\" + downloader.track_number + ". " + song + ".lrc")
+movedcoverjpg = (albumdir + "\\" + "cover.jpg")
 
-#puts folder 
-print("Moved Lyric To:")
-print(movedlyricsfile)
+#prints folder where lyric went
+print("\n")
+print("Moved lyric to:")
+print(movedlyricsfile, "\n")
 newPath = shutil.move(originallyricsfile, movedlyricsfile)
 
-# downloads cover to folder
-image_url = cover
-f = open(movedcoverjpg,'wb')
-f.write(urllib.request.urlopen(cover).read())
-f.close()
+# alias cover to original download link
+cover = downloader.original_link
 
-os.chdir(album_folder)
+#switch to album directory
+os.chdir(albumdir)
 
-if os.path.isfile("cover.jpg"):
-    print("Cover already downloaded, skipping download")
-    
-else:
-# downloads cover to folder
+#checks if cover exists, if not it downloads
+try:
+    f = open(movedcoverjpg)
+    print("Cover already downloaded, skipping download. Enjoy!")
+    f.close()
+    quit()
+except IOError:
     print("No cover.jpg detected, downloading now")
     image_url = cover
     f = open(movedcoverjpg,'wb')
     f.write(urllib.request.urlopen(cover).read())
     f.close()
-    print("Cover downloaded to:")
-    print(movedcoverjpg)
+    print("Cover downloaded!")
+    quit()
+
+    #delete currentsong and filtered
