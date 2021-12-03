@@ -27,11 +27,10 @@ Rips lyrics from currently playing song on Spotify, converts to LRC format for o
 
 # How to use:
 
-· Listen to a song on Spotify
+· Listen to a song on Spotify web player (and be signed in on the normal https://open.spotify.com/ site)
 
-· open converter.py
+· open converter.py in a cmd or git-bash terminal
 
 · Wait about 10 seconds
 
-· Once complete, check "Lyrics" folder for grouping by album and artist
-
+· Once complete, check "Lyrics" folder for grouping by artist, album, and track number and title.
