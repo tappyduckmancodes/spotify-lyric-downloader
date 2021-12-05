@@ -1,4 +1,4 @@
-# **spotify-lyrics-to-lrc**
+# **spotify-lyric-downloader**
 Rips lyrics from currently playing song on Spotify, converts to LRC format for offline playback (e.g Plex, Kodi, MusicBee)
 
 ---------------------------------------------------------------------
