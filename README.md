@@ -4,7 +4,7 @@ Rips lyrics from currently playing song on Spotify, converts to LRC format for o
 ---------------------------------------------------------------------
 # Requisites:
 
-> pip install os re sys spotipy itertools json requests base64 linecache webbrowser bs4 time pyautogui pyperclip urllib3 pprint datetime
+> pip install os re sys spotipy itertools json requests base64 linecache webbrowser bs4 time pyautogui pyperclip urllib3 pprint datetime shutil platform subprocess
 
 ---------------------------------------------------------------------
 # How to set up:
