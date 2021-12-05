@@ -1,5 +1,6 @@
-import os, re, sys, spotipy, itertools, json, requests, base64, linecache, webbrowser, bs4, time, pyautogui, pyperclip, urllib3, pprint, datetime
+import os, re, sys, spotipy, itertools, json, requests, base64, linecache, webbrowser, bs4, time, pyautogui, pyperclip, urllib3, pprint, datetime, shutil, platform, subprocess
 import spotipy.util as util
+import urllib.request
 from os import path
 from spotipy.oauth2 import SpotifyOAuth
 from bs4 import BeautifulSoup
@@ -38,9 +39,9 @@ with open('currentsong.txt', 'r')  as f:
 # Removes region codes by removing all short lines
 filtered_lines = [line for line in lines if len(line) > 10]
 # writing out file w no 2-character country codes
-with open('filtered.txt', 'w') as f:
-    for line in filtered_lines:
-        f.write(line)
+#with open('filtered.txt', 'w') as f:
+#    for line in filtered_lines:
+#        f.write(line)
 
 database = "currentsong.txt"
 def search_string_in_file(database, string_to_search):
@@ -67,6 +68,15 @@ def replace_line(database, line_num, text):
     out.writelines(lines)
     out.close()
 
+#for opening folder in various operating system explorers
+def open_file(path):
+    if platform.system() == "Windows":
+        os.startfile(path)
+    elif platform.system() == "Darwin":
+        subprocess.Popen(["open", path])
+    else:
+        subprocess.Popen(["xdg-open", path])
+        
 #i dont know how to make tables so this finds text and finds the line below which is the string needed
 song_uri_link = search_string_in_file(database, 'spotify:track:')
 song_name = search_string_in_file(database, '"preview_url": "https://p.scdn.co/mp3-preview/')
@@ -265,6 +275,35 @@ lyrics = "Lyrics"
 host_dir = os.getcwd()
 # print("Host Directory: \n" + host_dir)
 
+album_info = sp.album_tracks(album_uri_link)
+
+# saves currently playing album info to txt file
+result = json.dumps(album_info)
+z = open("album_info.txt", "w")
+z.write(result)
+z.close()
+album_database = "album_info.txt"
+with open('album_info.txt', 'r') as handle:
+    parsed = json.load(handle)
+    parsed2 = (json.dumps(parsed, indent=1, sort_keys=True))
+with open('album_info.txt', 'w') as file: # line breaks
+    file.write(parsed2)
+    file.close()
+
+#reading for short line removal
+with open('album_info.txt', 'r')  as f:
+    lines = f.readlines()
+# Removes region codes by removing all short lines
+filtered_lines = [line for line in lines if len(line) > 10]
+# writing out file w no 2-character country codes
+with open('filtered_album_info.txt', 'w') as f:
+    for line in filtered_lines:
+        f.write(line)
+os.remove("album_info.txt")
+os.rename('filtered_album_info.txt', "album_info.txt")
+#if needed, commewnt below line out for album_info saved to txt
+os.remove("album_info.txt")
+    
 #creates lyrics folder
 if os.path.isdir(lyrics):
     os.chdir(lyrics)
@@ -293,6 +332,45 @@ else:
 
 os.chdir(host_dir)
 
+#set up variables for moving lyric and setting up cover.jpg location
+host_folder = host_dir
+lyrics = "Lyrics"
+artist_name = artist_name
+albumdir = albumdir
+song = song
+cover = lyrics_url
+originallyricsfile = (host_folder + "\\output.lrc")
+movedlyricsfile = (albumdir + "\\" + track_number + ". " + song + ".lrc")
+movedcoverjpg = (albumdir + "\\" + "cover.jpg")
+
+#checks if cover exists, if not it downloads
+os.chdir(albumdir)
+try:
+    f = open(movedcoverjpg)
+    print("Cover already downloaded, skipping download.")
+    f.close()
+except IOError:
+    print("No cover.jpg detected, downloading now")
+    cover = original_link
+    f = open(movedcoverjpg,'wb')
+    f.write(urllib.request.urlopen(cover).read())
+    f.close()
+    print("Cover downloaded!")
+
+os.chdir(host_dir)
+#checks if lyric exists, if not it downloads
+try:
+    f = open(movedlyricsfile)
+    print("Lyric already downloaded, skipping download. Enjoy!")
+    f.close()
+    open_file(albumdir)
+    os.remove("currentsong.txt")
+    quit()
+
+except IOError:
+    print("No lyric detected, downloading now")
+
+
 link_for_cookie = "https://open.spotify.com/lyrics"
 lyrics = webbrowser.open(link_for_cookie, new=0, autoraise=True)
 time.sleep(10)
@@ -303,7 +381,7 @@ pyautogui.hotkey('ctrl', 'c')
 time.sleep(0.1)
 pyautogui.hotkey('ctrl', 'w')
 pyautogui.hotkey('ctrl', 'w')
-print("Tab closed and lyrics copied! \n")
+print("Tab closed and contents copied! \n")
 lyricdata = pyperclip.paste()
 z = open("lyrics.txt", "w", encoding="utf-8")
 z.write(lyricdata)
