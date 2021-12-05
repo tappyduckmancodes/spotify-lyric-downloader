@@ -27,7 +27,7 @@ Rips lyrics from currently playing song on Spotify, converts to LRC format for o
 
 # How to use:
 
-· Listen to a song on Spotify web player (and be signed in on the normal https://open.spotify.com/ site)
+· Listen to a song on Spotify (any client works) and be signed in on the normal https://open.spotify.com/ site
 
 · open converter.py in a cmd or git-bash terminal
 
