@@ -1,4 +1,4 @@
-import os, re, sys, itertools, json, requests, base64, linecache, time, requests, webbrowser, bs4, time, pyautogui, pyperclip, urllib3, pprint, shutil
+import os, re, sys, itertools, json, requests, base64, linecache, time, requests, webbrowser, bs4, time, pyautogui, pyperclip, urllib3, pprint, shutil, platform, subprocess
 import urllib.request
 import downloader
 
@@ -262,15 +262,15 @@ os.remove("lyricsfixed.lrc")
 os.remove("lyricstimingsremoved.txt")
 os.remove("timingsfixed.lrc")
 os.remove("lyrics.txt")
+os.remove("currentsong.txt")
 
 #set up variables for moving lyric and setting up cover.jpg location
 host_folder = downloader.host_dir
 lyrics = "Lyrics"
-artist_name = downloader.artist
+artist_name = downloader.artist_name
 albumdir = downloader.albumdir
 song = downloader.song
 cover = downloader.lyrics_url
-
 originallyricsfile = (host_folder + "\\output.lrc")
 movedlyricsfile = (albumdir + "\\" + downloader.track_number + ". " + song + ".lrc")
 movedcoverjpg = (albumdir + "\\" + "cover.jpg")
@@ -281,25 +281,13 @@ print("Moved lyric to:")
 print(movedlyricsfile, "\n")
 newPath = shutil.move(originallyricsfile, movedlyricsfile)
 
-# alias cover to original download link
-cover = downloader.original_link
+def open_file(path):
+    if platform.system() == "Windows":
+        os.startfile(path)
+    elif platform.system() == "Darwin":
+        subprocess.Popen(["open", path])
+    else:
+        subprocess.Popen(["xdg-open", path])
+        
+open_file(albumdir)
 
-#switch to album directory
-os.chdir(albumdir)
-
-#checks if cover exists, if not it downloads
-try:
-    f = open(movedcoverjpg)
-    print("Cover already downloaded, skipping download. Enjoy!")
-    f.close()
-    quit()
-except IOError:
-    print("No cover.jpg detected, downloading now")
-    image_url = cover
-    f = open(movedcoverjpg,'wb')
-    f.write(urllib.request.urlopen(cover).read())
-    f.close()
-    print("Cover downloaded!")
-    quit()
-
-    #delete currentsong and filtered
