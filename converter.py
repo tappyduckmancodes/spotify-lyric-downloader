@@ -1,3 +1,4 @@
+# coding:utf-8
 import os, re, sys, itertools, json, requests, base64, linecache, time, requests, bs4, time, pyautogui, pyperclip, pprint, shutil, platform, subprocess
 import downloader
 from pathlib import Path #using this module to solve difference path syntax between Mac OS and Windows
@@ -6,7 +7,7 @@ os.chdir(host_folder) #change path to work path
 lyrics_url = downloader.lyrics_url
 
 # Read in the jumbled Spotify lyric text
-with open('lyrics.txt', 'r') as file :
+with open('lyrics.txt', 'r',encoding='UTF-8') as file :
     filedata = file.read()
     fullstring = filedata
 substring_403 = "HTTP ERROR 403"
