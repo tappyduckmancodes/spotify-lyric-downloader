@@ -1,4 +1,4 @@
-import os, re, sys, itertools, json, requests, base64, linecache, time, requests, bs4, time, pyautogui, pyperclip, urllib3, pprint, shutil, platform, subprocess
+import os, re, sys, itertools, json, requests, base64, linecache, time, requests, bs4, time, pyautogui, pyperclip, pprint, shutil, platform, subprocess
 import downloader
 from pathlib import Path #using this module to solve difference path syntax between Mac OS and Windows
 host_folder = downloader.host_dir #get work path
