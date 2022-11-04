@@ -1,4 +1,4 @@
-import os, re, sys, spotipy, itertools, json, requests, base64, linecache, bs4, time, pyautogui, pyperclip, urllib3, pprint, datetime, shutil, platform, subprocess
+import os, re, sys, spotipy, itertools, json, requests, base64, linecache, bs4, time, pyautogui, pyperclip, pprint, datetime, shutil, platform, subprocess
 import spotipy.util as util
 import requests
 from os import path
