@@ -1,3 +1,4 @@
+# coding:utf-8
 import os, re, sys, spotipy, itertools, json, requests, base64, linecache, bs4, time, pyautogui, pyperclip, pprint, datetime, shutil, platform, subprocess
 import spotipy.util as util
 import requests
@@ -9,7 +10,7 @@ from pathlib import Path #using this module to solve difference path syntax betw
 # MAKE SURE THESE ARE CORRECT
 CLIENT_ID = '(spotify API client ID here)'
 CLIENT_SECRET = '(spotify API client SECRET here)'
-REDIRECT_URI =  '(spotify API REDIRECT URI here)'
+REDIRECT_URI =  'http://example.com/example'
 authorization='(spotify authorization here)'
 # MAKE SURE THESE ARE CORRECT
 
