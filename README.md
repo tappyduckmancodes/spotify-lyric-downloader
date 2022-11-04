@@ -36,4 +36,4 @@ Forgive my carelessness please if there are some modules I forgot to mention, ju
 
 · Wait about 10 seconds.
 
-· Once complete, check "Lyrics" folder for grouping by artist, album, and track number and title.
+· Once complete, check "Lyrics" folder for grouping by artist, album, and track number and title. Enjoy yourself!
