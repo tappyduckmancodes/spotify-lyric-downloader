@@ -32,7 +32,7 @@ This software is totally open source code permanently,which is only used for stu
 
 · Listen to a song on Spotify (any client works).
 
-· run converter.py in a cmd or git-bash terminal.
+· run converter.py in Windows cmd or Mac terminal.
 
 · Wait about 10 seconds.
 
