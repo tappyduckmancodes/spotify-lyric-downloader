@@ -5,8 +5,8 @@ This software is totally open source code permanently,which is only used for stu
 ---------------------------------------------------------------------
 # Requisites:
 
-> pip install os re sys spotipy itertools json requests base64 linecache bs4 time pyautogui pyperclip pprint datetime shutil platform subprocess importlib
-
+> pip install spotipy requests bs4 pyautogui pyperclip datetime importlib
+Forgive my carelessness please if there are some modules I forgot to mention, just install it by yourself.
 ---------------------------------------------------------------------
 # How to set up:
 
