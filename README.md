@@ -18,7 +18,7 @@ This software is totally open source code permanently,which is only used for stu
 
 · Sign into Spotify and listen to any song you like.
 
-· open the browser and open the developer tool(Hot key is F12 in Chrome), and go to https://open.spotify.com/lyrics, find the authrization value as the picture as below. Then close the browser. Remember, once you get the authrization, don't open https://open.spotify.com/lyrics in a new web, or it will generate a new one and the old one will be expired. As long as you don't open a new web, this can maintain a long time. Just use client to listen to music.
+· open the browser and open the developer tool(Hot key is F12 in Chrome), and go to https://open.spotify.com/lyrics, find the authrization value following the picture below. Then close the browser. Remember, once you get the authrization, don't open https://open.spotify.com/lyrics in a new web, or it will generate a new one and the old one will be expired. As long as you don't open a new web, this can maintain a long time. Just use client to listen to music.
 ![Image load fail](./picture/get_authrization.png)
 
 · Run converter.py
