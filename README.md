@@ -21,7 +21,7 @@ This software is totally open source code permanently,which is only used for stu
 · open the browser and open the developer tool(Hot key is F12 in Chrome), and go to https://open.spotify.com/lyrics, find the authrization value following the picture below. Then close the browser. Remember, once you get the authrization, don't open https://open.spotify.com/lyrics in a new web, or it will generate a new one and the old one will be expired. As long as you don't open a new web, this can maintain a long time. Just use client or the web you first opened to listen to music.
 ![Image load fail](./picture/get_authrization.png)
 
-· Run converter.py
+· Run converter.py in a cmd or git-bash terminal.
 
 · It will redirect you to a link based off your URI, copy everything but ```http://example.com/example``` from the url and paste it into the console. Then you can close the browser.
 
