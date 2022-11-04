@@ -1,14 +1,16 @@
-import os, re, sys, spotipy, itertools, json, requests, base64, linecache, webbrowser, bs4, time, pyautogui, pyperclip, urllib3, pprint, datetime, shutil, platform, subprocess
+import os, re, sys, spotipy, itertools, json, requests, base64, linecache, bs4, time, pyautogui, pyperclip, urllib3, pprint, datetime, shutil, platform, subprocess
 import spotipy.util as util
-import urllib.request
+import requests
 from os import path
 from spotipy.oauth2 import SpotifyOAuth
 from bs4 import BeautifulSoup
+from pathlib import Path #using this module to solve difference path syntax between Mac OS and Windows
 
 # MAKE SURE THESE ARE CORRECT
 CLIENT_ID = '(spotify API client ID here)'
 CLIENT_SECRET = '(spotify API client SECRET here)'
 REDIRECT_URI =  '(spotify API REDIRECT URI here)'
+authorization='(spotify authorization here)'
 # MAKE SURE THESE ARE CORRECT
 
 os.environ['SPOTIPY_CLIENT_ID']  = CLIENT_ID
@@ -19,47 +21,6 @@ scope = "user-read-currently-playing"
 sp = spotipy.Spotify(auth_manager = SpotifyOAuth(scope = scope))
 current_track = sp.current_user_playing_track()
 
-# saves currently playing song info to txt file
-result = json.dumps(current_track)
-z = open("currentsong.txt", "w")
-z.write(result)
-z.close()
-
-with open('currentsong.txt', 'r') as handle:
-    parsed = json.load(handle)
-    parsed2 = (json.dumps(parsed, indent=0, sort_keys=True))
-
-with open('currentsong.txt', 'w') as file: # line breaks
-    file.write(parsed2)
-    file.close()
-
-#reading for short line removal
-with open('currentsong.txt', 'r')  as f:
-    lines = f.readlines()
-# Removes region codes by removing all short lines
-filtered_lines = [line for line in lines if len(line) > 10]
-# writing out file w no 2-character country codes
-#with open('filtered.txt', 'w') as f:
-#    for line in filtered_lines:
-#        f.write(line)
-
-database = "currentsong.txt"
-def search_string_in_file(database, string_to_search):
-    #    Search for the given string in file and return lines containing that string,
-#    along with line numbers
-    line_number = 0
-    list_of_results = []
-    # Open the file in read only mode
-    with open(database, 'r') as read_obj:
-        # Read all lines in the file one by one
-        for line in read_obj:
-            # For each line, check if line contains the string
-            line_number += 1
-            if string_to_search in line:
-                # If yes, then add the line number & line as a tuple in the list
-                list_of_results.append((line_number, line.rstrip()))
-    # Return list of tuples containing line numbers and lines where string is found
-    return list_of_results
 
 def replace_line(database, line_num, text):
     lines = open(database, 'r').readlines()
@@ -75,164 +36,21 @@ def open_file(path):
     elif platform.system() == "Darwin":
         subprocess.Popen(["open", path])
     else:
-        subprocess.Popen(["xdg-open", path])
-        
-#i dont know how to make tables so this finds text and finds the line below which is the string needed
-song_uri_link = search_string_in_file(database, 'spotify:track:')
-song_name = search_string_in_file(database, '"preview_url": "https://p.scdn.co/mp3-preview/')
-cover_link = search_string_in_file(database,'"width": 640')
-release_date = search_string_in_file(database,'"release_date":')
-album_name = search_string_in_file(database,'"release_date":')
-artist_name = search_string_in_file(database,'"artists": [')
-track_number = search_string_in_file(database,'"track_number":')
-album_uri_link = search_string_in_file(database, 'spotify:album:')
+        subprocess.Popen(["xdg-open", path]) 
 
-#song name
-for elem in song_name:
-    song_name = elem[0] - 3
-    f = open("currentsong.txt","r")
-    lines = f.readlines()
-    # logic for finding song name, and assigning it to some variable
-    x = lines[song_name]
-    x = x.replace('"name": "', '')
-    x = x.replace('\\u00e9', 'é')
-    x = x.replace('\\u00e0', 'à')
-    x = x.replace('\\u2019', "'")
-    x = x.replace('\\u0027', '\'')
-    x = x.replace('\\u2022', '·')
-    x = x.replace('?', '')
-    x = x.replace('"', '')
-    x = x.replace('/', '-')
-    x = x.replace('|', '-')
-    x = x.replace('\\', '')
-    x = x.replace(':', ' =')
-    x = x.replace(';', '-')
-    size = len(x)
-    minus_quote_and_comma = x[:size - 2]
-    song_name = minus_quote_and_comma
+#see if song is playing
+if current_track == None:
+    print("No song detected, make sure you're actively playing a song!")
+    os._exit(0)
+song_uri_link = current_track.get("item").get("uri").replace('spotify:track:','')
+song_name = current_track.get("item").get("name")
+cover_link = current_track.get("item").get("album").get("images")[0].get("url")
+release_date = current_track.get("item").get("album").get("release_date")
+album_name = current_track.get("item").get("album").get("name")
+artist_name = current_track.get("item").get("album").get("artists")[0].get("name")
+track_number = current_track.get("item").get("track_number")
+album_uri_link = current_track.get("item").get("album").get("uri")
 
-#cover URL
-for elem in cover_link:
-    cover_link = elem[0] - 2
-    f = open("currentsong.txt","r")
-    lines = f.readlines()
-    # logic for finding song name, and assigning it to some variable
-    x = lines[cover_link]
-    x = x.replace('"url": "https:', 'https:')
-    size = len(x)
-    minus_quote_and_comma = x[:size - 3]
-    cover_link = minus_quote_and_comma
-
-# Song URI
-for elem in song_uri_link:
-    song_uri_link = elem[0] - 1
-    f = open("currentsong.txt","r")
-    lines = f.readlines()
-    # logic for finding song name, and assigning it to some variable
-    x = lines[song_uri_link]
-    x = x.replace('"uri": "spotify:track:', '')
-    size = len(x)
-    minus_quote = x[:size - 2]
-    song_uri_link = minus_quote
-
-# Album URI
-for elem in album_uri_link:
-    album_uri_link = elem[0] - 1
-    f = open("currentsong.txt","r")
-    lines = f.readlines()
-    # logic for finding song name, and assigning it to some variable
-    x = lines[album_uri_link]
-    x = x.replace('"uri": "spotify:album:', 'spotify:album:')
-    size = len(x)
-    minus_quote = x[:size - 2]
-    album_uri_link = minus_quote
-
-# Track Number
-for elem in track_number:
-    track_number = elem[0] - 1
-    f = open("currentsong.txt","r")
-    lines = f.readlines()
-    # logic for finding song name, and assigning it to some variable
-    x = lines[track_number]
-    x = x.replace('"track_number": ', '')
-    size = len(x)
-    minus_quote = x[:size - 2]
-    track_number = minus_quote
-
-# Release Date
-for elem in release_date:
-    release_date = elem[0] - 1
-    f = open("currentsong.txt","r")
-    lines = f.readlines()
-    # logic for finding song name, and assigning it to some variable
-    x = lines[release_date]
-    x = x.replace('\\u00e9', 'é')
-    x = x.replace('\\u00e0', 'à')
-    x = x.replace('\\u2019', "'")
-    x = x.replace('\\u0027', '\'')
-    x = x.replace('\\u2022', '·')
-    x = x.replace('"name": "', '')
-    x = x.replace('?', '')
-    x = x.replace('"', '')
-    x = x.replace('/', '')
-    x = x.replace('|', '-')
-    x = x.replace('\\', '')
-    x = x.replace(':', ' -')
-    x = x.replace(';', '-')
-    x = x.replace('release_date - ', '')
-    size = len(x)
-    minus_quote_and_comma = x[:size - 2]
-    release_date = minus_quote_and_comma
-
-# Album Name
-for elem in album_name:
-    album_name = elem[0] - 2
-    f = open("currentsong.txt","r")
-    lines = f.readlines()
-    # logic for finding song name, and assigning it to some variable
-    x = lines[album_name]
-    x = x.replace('\\u00e9', 'é')
-    x = x.replace('\\u00e0', 'à')
-    x = x.replace('\\u2019', "'")
-    x = x.replace('\\u0027', '\'')
-    x = x.replace('\\u2022', '·')
-    x = x.replace('"name": "', '')
-    x = x.replace('?', '')
-    x = x.replace('"', '')
-    x = x.replace('/', '')
-    x = x.replace('|', '-')
-    x = x.replace('\\', '')
-    x = x.replace(':)', ' =)')
-    x = x.replace(': ', ' - ')
-    x = x.replace(';', '-')
-    x = x.replace(',\n', '')
-    album_name = x
-
-# Artist Name
-for elem in artist_name:
-    artist_name = elem[0] + 6
-    f = open("currentsong.txt","r")
-    lines = f.readlines()
-    # logic for finding song name, and assigning it to some variable
-    x = lines[artist_name]
-    x = x.replace('\\u00e9', 'é')
-    x = x.replace('\\u00e0', 'à')
-    x = x.replace('\\u2019', "'")
-    x = x.replace('\\u0027', '\'')
-    x = x.replace('\\u2022', '·')
-    x = x.replace('"name": "', '')
-    x = x.replace('?', '')
-    x = x.replace('"', '')
-    x = x.replace('/', '')
-    x = x.replace('|', '-')
-    x = x.replace('\\', '')
-    x = x.replace(':', ' -')
-    x = x.replace(';', '-')
-    x = x.replace(':)', ' =)')
-    size = len(x)
-    minus_quote_and_comma = x[:size - 2]
-    artist_name = minus_quote_and_comma
-    f.close()
 
 # generate lyrics link
 original_link = cover_link
@@ -244,23 +62,16 @@ link_start = "https://spclient.wg.spotify.com/color-lyrics/v2/track/"
 lyrics_url = (link_start + song_uri_link + "/image/" + cover_link + "?format=json&vocalRemoval=false&market=from_token")
 lyrics_url_no_access = (link_start + song_uri_link + "/image/" + cover_link)
 
-#see if song is playing
-filesize = os.path.getsize("currentsong.txt")
-if filesize == 4:
-    print("No song detected, make sure you're actively playing a song!")
-    os.remove("currentsong.txt")
-    quit()
-else:
-    print("Success! Song detected! \n")
-    print("Song: ", song_name)
-    print("Album name:", album_name)
-    print("Artist name:", artist_name)
-    print("Track number: ", track_number)
-    print("Release date: ", release_date)
-    print("Album cover URL:", original_link)
-    print("Track URI:", song_uri_link)
-    print("Album URI:", album_uri_link)
-    print("Lyric URL:", lyrics_url, "\n")
+print("Success! Song detected! \n")
+print("Song: ", song_name)
+print("Album name:", album_name)
+print("Artist name:", artist_name)
+print("Track number: ", track_number)
+print("Release date: ", release_date)
+print("Album cover URL:", original_link)
+print("Track URI:", song_uri_link)
+print("Album URI:", album_uri_link)
+print("Lyric URL:", lyrics_url, "\n")
 
 # getting release year for album
 release_date = release_date.replace('-', '/')
@@ -339,9 +150,9 @@ artist_name = artist_name
 albumdir = albumdir
 song = song
 cover = lyrics_url
-originallyricsfile = (host_folder + "\\output.lrc")
-movedlyricsfile = (albumdir + "\\" + track_number + ". " + song + ".lrc")
-movedcoverjpg = (albumdir + "\\" + "cover.jpg")
+originallyricsfile = (Path(host_folder)/"output.lrc")
+movedlyricsfile = (Path(albumdir)/(str(track_number) + ". " + str(song) + ".lrc"))
+movedcoverjpg = (Path(albumdir)/"cover.jpg")
 
 #checks if cover exists, if not it downloads
 os.chdir(albumdir)
@@ -351,9 +162,9 @@ try:
     f.close()
 except IOError:
     print("No cover.jpg detected, downloading now")
-    cover = original_link
+    cover =requests.get(original_link).content
     f = open(movedcoverjpg,'wb')
-    f.write(urllib.request.urlopen(cover).read())
+    f.write(cover)
     f.close()
     print("Cover downloaded!")
 
@@ -370,19 +181,31 @@ try:
 except IOError:
     print("No lyric detected, downloading now")
 
-
-link_for_cookie = "https://open.spotify.com/lyrics"
-lyrics = webbrowser.open(link_for_cookie, new=0, autoraise=True)
-time.sleep(10)
-lyrics = webbrowser.open(lyrics_url, new=0, autoraise=True)
-time.sleep(1.2)
-pyautogui.hotkey('ctrl', 'a')
-pyautogui.hotkey('ctrl', 'c')
-time.sleep(0.1)
-pyautogui.hotkey('ctrl', 'w')
-pyautogui.hotkey('ctrl', 'w')
-print("Tab closed and contents copied! \n")
-lyricdata = pyperclip.paste()
+headers = {
+    'Host': 'spclient.wg.spotify.com',
+    'sec-ch-ua': '"Google Chrome";v="107", "Chromium";v="107", "Not=A?Brand";v="24"',
+    'accept-language': 'en',
+    'sec-ch-ua-mobile': '?0',
+    'app-platform': 'WebPlayer',
+    'authorization': authorization,
+    'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36',
+    'accept': 'application/json',
+    'spotify-app-version': '1.1.98.597.g7f2ab0d4',
+    'sec-ch-ua-platform': '"macOS"',
+    'origin': 'https://open.spotify.com',
+    'sec-fetch-site': 'same-site',
+    'sec-fetch-mode': 'cors',
+    'sec-fetch-dest': 'empty',
+    'referer': 'https://open.spotify.com/',
+}
+params = {
+    'format': 'json',
+    'vocalRemoval': 'false',
+    'market': 'from_token',
+}
+response = requests.get(lyrics_url, params=params, headers=headers)
+lyricdata=response.text
+#print(lyricdata)
 z = open("lyrics.txt", "w", encoding="utf-8")
 z.write(lyricdata)
 z.close()
