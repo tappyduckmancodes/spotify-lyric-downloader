@@ -30,7 +30,7 @@ This software is totally open source code permanently,which is only used for stu
 
 # How to use:
 
-· Listen to a song on Spotify (any client works) and be signed in on the normal https://open.spotify.com/ site.
+· Listen to a song on Spotify (any client works).
 
 · run converter.py in a cmd or git-bash terminal.
 
