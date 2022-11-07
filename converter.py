@@ -1,13 +1,13 @@
-import os, re, sys, itertools, json, requests, base64, linecache, time, requests, webbrowser, bs4, time, pyautogui, pyperclip, urllib3, pprint, shutil, platform, subprocess
-import urllib.request
+# coding:utf-8
+import os, re, sys, itertools, json, requests, base64, linecache, time, requests, bs4, time, pyautogui, pyperclip, pprint, shutil, platform, subprocess
 import downloader
-
-host_folder = downloader.host_dir
-os.chdir(host_folder)
+from pathlib import Path #using this module to solve difference path syntax between Mac OS and Windows
+host_folder = downloader.host_dir #get work path
+os.chdir(host_folder) #change path to work path
 lyrics_url = downloader.lyrics_url
 
 # Read in the jumbled Spotify lyric text
-with open('lyrics.txt', 'r') as file :
+with open('lyrics.txt', 'r',encoding='UTF-8') as file :
     filedata = file.read()
     fullstring = filedata
 substring_403 = "HTTP ERROR 403"
@@ -26,22 +26,9 @@ if substring_403 in fullstring:
             quit()
 # exception with no token, just redownloads it based on lyrics_url
 elif substring_401 in fullstring:
-    print("Error, no token found, retrying once")
-    link_for_cookie = "https://open.spotify.com/lyrics"
-    lyrics = webbrowser.open(link_for_cookie, new=0, autoraise=True)
-    time.sleep(10)
-    lyrics = webbrowser.open(lyrics_url, new=0, autoraise=True)
-    time.sleep(1.2)
-    pyautogui.hotkey('ctrl', 'a')
-    pyautogui.hotkey('ctrl', 'c')
-    time.sleep(0.1)
-    pyautogui.hotkey('ctrl', 'w')
-    pyautogui.hotkey('ctrl', 'w')
-    print("tab closed")
-    lyricdata = pyperclip.paste()
-    z = open("lyrics.txt", "w", encoding="utf-8")
-    z.write(lyricdata)
-    z.close()
+    print("Error, token has been expired, please open the browser to get a new one and restart the program")
+    os._exit(0)
+    
 #exception for successful lyric grab
 elif substring_success in fullstring:
     print("Lyric grab was success, converting now...")
@@ -60,6 +47,7 @@ filedata = filedata.replace('"', '')
 filedata = filedata.replace('hasVocalRemoval:false}', '')
 filedata = filedata.replace(']', '] ')
 filedata = filedata.replace('\\', '*')
+filedata = filedata.replace(',syllables:[] ,endTimeMs:0}', '')
 
 # Write the file out
 with open('lyricsfixed.lrc', 'w') as file:
@@ -262,8 +250,8 @@ os.remove("lyricsfixed.lrc")
 os.remove("lyricstimingsremoved.txt")
 os.remove("timingsfixed.lrc")
 os.remove("lyrics.txt")
-os.remove("currentsong.txt")
 
+print(downloader)
 #set up variables for moving lyric and setting up cover.jpg location
 host_folder = downloader.host_dir
 lyrics = "Lyrics"
@@ -271,9 +259,9 @@ artist_name = downloader.artist_name
 albumdir = downloader.albumdir
 song = downloader.song
 cover = downloader.lyrics_url
-originallyricsfile = (host_folder + "\\output.lrc")
-movedlyricsfile = (albumdir + "\\" + downloader.track_number + ". " + song + ".lrc")
-movedcoverjpg = (albumdir + "\\" + "cover.jpg")
+originallyricsfile = (Path(host_folder)/"output.lrc")
+movedlyricsfile = (Path(albumdir)/(str(downloader.track_number) + ". " + str(song) + ".lrc"))
+movedcoverjpg = (Path(albumdir)/"cover.jpg")
 
 #prints folder where lyric went
 print("\n")
@@ -290,4 +278,3 @@ def open_file(path):
         subprocess.Popen(["xdg-open", path])
         
 open_file(albumdir)
-
