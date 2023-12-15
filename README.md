@@ -6,6 +6,7 @@ This software is totally open source code permanently 100%, which is only used f
 # Requisites:
 
 > pip install spotipy requests bs4 pyautogui pyperclip datetime importlib
+
 Forgive my carelessness please if there are some modules I forgot to mention, just install it by yourself.
 ---------------------------------------------------------------------
 # How to set up:
@@ -18,7 +19,7 @@ Forgive my carelessness please if there are some modules I forgot to mention, ju
 
 · Sign into Spotify and listen to any song you like.
 
-· Open your browser and open the developer tool (Hot key is F12 in Chrome), and go to https://open.spotify.com/lyrics, find the authorization value following the picture below. Then close the browser. Remember, once you get the authrization, don't open https://open.spotify.com/lyrics in a new web, or it will generate a new one and the old one will be expired. As long as you don't open a new web, this can maintain a long time (roughly 1-2hrs from testing). Just use client or the web you first opened to listen to music.
+· Open your browser and open the developer tool (Hot key is F12 in Chrome), and go to https://open.spotify.com/lyrics, find the authorization value following the picture below. Then close the browser. Remember, once you get the authorization, don't open https://open.spotify.com/lyrics in a new web, or it will generate a new one and the old one will be expired. As long as you don't open a new web, this can maintain a long time (roughly 1-2hrs from testing). Just use client or the web you first opened to listen to music.
 ![Image load fail](./picture/get_authrization.png)
 
 · Run converter.py in a cmd or git-bash terminal.
