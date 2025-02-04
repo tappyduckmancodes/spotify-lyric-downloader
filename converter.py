@@ -7,7 +7,7 @@ os.chdir(host_folder) #change path to work path
 lyrics_url = downloader.lyrics_url
 
 # Read in the jumbled Spotify lyric text
-with open('lyrics.txt', 'r',encoding='UTF-8') as file :
+with open('lyrics.txt', 'r', encoding='UTF-8') as file:
     filedata = file.read()
     fullstring = filedata
 substring_403 = "HTTP ERROR 403"
@@ -32,7 +32,7 @@ elif substring_401 in fullstring:
 #exception for successful lyric grab
 elif substring_success in fullstring:
     print("Lyric grab was success, converting now...")
-    with open('lyrics.txt', 'r') as file :
+    with open('lyrics.txt', 'r', encoding='UTF-8') as file:
         filedata = file.read()
         fullstring = filedata
 
@@ -50,27 +50,27 @@ filedata = filedata.replace('\\', '*')
 filedata = filedata.replace(',syllables:[] ,endTimeMs:0}', '')
 
 # Write the file out
-with open('lyricsfixed.lrc', 'w') as file:
+with open('lyricsfixed.lrc', 'w', encoding='UTF-8') as file:
     file.write(filedata)
 
 # remove leftover shit from Spotify that doesnt apply to lrc files
-with open("lyricsfixed.lrc", "r") as f:
-    lines = f.readlines() 
-with open("lyricsfixed.lrc", "w") as new_f:
+with open("lyricsfixed.lrc", "r", encoding='UTF-8') as f:
+    lines = f.readlines()
+with open("lyricsfixed.lrc", "w", encoding='UTF-8') as new_f:
     for line in lines:
         if not line.startswith("colors:{background"):
             new_f.write(line)
 
 # removes last line of gibberish
 import os, sys, re
-readFile = open("lyricsfixed.lrc")
+readFile = open("lyricsfixed.lrc", 'r', encoding='UTF-8')
 lines = readFile.readlines()
 readFile.close()
-w = open("lyricsfixed.lrc",'w')
+w = open("lyricsfixed.lrc",'w', encoding='UTF-8')
 w.writelines([item for item in lines[:-1]])
 w.close()
 
-with open('lyricsfixed.lrc', 'r') as file :
+with open('lyricsfixed.lrc', 'r', encoding='UTF-8') as file:
     filedata = file.read()
 # I keep initializing it the same way and just reassigning the filedata string because i am idiot brain (stop doing this!)
 test_str = filedata
@@ -94,7 +94,7 @@ file.write(text)
 file.close()
 
 # Read in the file
-with open('timings.txt', 'r') as file :
+with open('timings.txt', 'r', encoding='UTF-8') as file:
     filedata = file.read()
 
 # Bad logic to add brackets and keep timing scheme consistent because im dumb
@@ -128,10 +128,10 @@ filedata = filedata.replace('.3]', '.30]')
 filedata = filedata.replace('.2]', '.20]')
 filedata = filedata.replace('.1]', '.10]')
 filedata = filedata.replace('.0]', '.00]')
-with open('timingsfixed.txt', 'w') as file:
+with open('timingsfixed.txt', 'w', encoding='UTF-8') as file:
     file.write(filedata)
 
-with open('timingsfixed.txt', 'r') as file :
+with open('timingsfixed.txt', 'r', encoding='UTF-8') as file:
     filedata = file.read()
 filedata = filedata.replace('1 ', '1]')
 filedata = filedata.replace('2 ', '2]')
@@ -148,13 +148,13 @@ s1 = filedata
 s2 = "]"
 filedatawithlastbracket = (s1 + s2) 
 
-with open('timingsfixed.txt', 'w') as file:
+with open('timingsfixed.txt', 'w', encoding='UTF-8') as file:
     file.write(filedatawithlastbracket)
 
 os.remove("timings.txt")
 os.rename('timingsfixed.txt', 'timingsfixed.lrc')
 
-with open('lyricsfixed.lrc', 'r') as file :
+with open('lyricsfixed.lrc', 'r', encoding='UTF-8') as file:
     filedata = file.read()
 # doing what i did earlier, very janky and very backwards, to extract whats *not* in the brackets to get the words to apply the new times to
 test_str = filedata
@@ -162,29 +162,29 @@ a_string = test_str
 modified_string = re.sub(r"\[\s*\+?(-?\d+)\s*\]", "", a_string) # just the words from the song, prints without timecodes
 # print(modified_string)
 
-with open('lyricstimingsremoved.txt', 'w') as file:
+with open('lyricstimingsremoved.txt', 'w', encoding='UTF-8') as file:
     file.write(modified_string)
 
 from itertools import zip_longest
-with open('timingsfixed.lrc', 'r') as file :
+with open('timingsfixed.lrc', 'r', encoding='UTF-8') as file:
     filedata = file.read()
-with open('lyricstimingsremoved.txt', 'r') as file1:
+with open('lyricstimingsremoved.txt', 'r', encoding='UTF-8') as file1:
     test_str = file1.read()
 #combines new timing and lyric files, A/B/A/B style, no AA/BB
-with open('timingsfixed.lrc', 'r') as src1, open('lyricstimingsremoved.txt', 'r') as src2, open('output.lrc', 'w') as dst:
+with open('timingsfixed.lrc', 'r', encoding='UTF-8') as src1, open('lyricstimingsremoved.txt', 'r', encoding='UTF-8') as src2, open('output.lrc', 'w', encoding='UTF-8') as dst:
     for line_from_first, line_from_second in itertools.zip_longest(src1, src2):
         if line_from_first is not None:
             dst.write(line_from_first)
         if line_from_second is not None:
             dst.write(line_from_second)
 
-with open('output.lrc', 'r') as file :
+with open('output.lrc', 'r', encoding='UTF-8') as file:
     filedata = file.read()
 filedata = filedata.replace('   ', '')
-with open('output.lrc', 'w') as file:
+with open('output.lrc', 'w', encoding='UTF-8') as file:
     file.write(filedata)
 #combines into one line where line breaks can be added
-with open('output.lrc') as f:
+with open('output.lrc', 'r', encoding='UTF-8') as f:
     all_lines = f.readlines()
     all_lines = [x.strip() for x in all_lines if x.strip()]
     two_lines = " ".join(x for x in all_lines[:2])
@@ -241,7 +241,7 @@ oneline = oneline.replace('.1]', '.10]')
 oneline = oneline.replace('.0]', '.00]')
 
 #writing final lines
-with open('output.lrc', 'w') as file:
+with open('output.lrc', 'w', encoding='UTF-8') as file:
     file.write(oneline)
     print("Conversion complete!")
 
