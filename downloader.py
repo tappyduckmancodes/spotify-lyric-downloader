@@ -22,6 +22,8 @@ scope = "user-read-currently-playing"
 sp = spotipy.Spotify(auth_manager = SpotifyOAuth(scope = scope))
 current_track = sp.current_user_playing_track()
 
+def sanitize_folder_name(name):
+    return re.sub(r'[<>:"/\\|?*]', '_', name)
 
 def replace_line(database, line_num, text):
     lines = open(database, 'r').readlines()
@@ -133,13 +135,16 @@ else:
     os.chdir(artist)
     artistdir = os.getcwd()
 
+#remove special characters from album name for folder creation
+sanitized_album_name = sanitize_folder_name(album)
+
 #creates album folder
-if os.path.isdir(album):
-    os.chdir(album)
+if os.path.isdir(sanitized_album_name):
+    os.chdir(sanitized_album_name)
     albumdir = os.getcwd()
 else:
-    os.mkdir(album)
-    os.chdir(album)
+    os.mkdir(sanitized_album_name)
+    os.chdir(sanitized_album_name)
     albumdir = os.getcwd()
 
 os.chdir(host_dir)
